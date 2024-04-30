@@ -82,7 +82,7 @@ const AddUser = () => {
             </form>
             {user && <div className="user">
                 <div className="detail">
-                    <img src={ user.avatar || "./avatar.png"} alt="" />
+                    <img src={ user.avatar || "./favicon.png"} alt="" />
                     <span>{user.username}</span>
                 </div>
                 <button onClick={handelAdd}>Add User</button>

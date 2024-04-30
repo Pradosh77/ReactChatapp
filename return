@@ -1,0 +1,154 @@
+[1mdiff --git a/src/components/chat/Chat.jsx b/src/components/chat/Chat.jsx[m
+[1mindex 363d064..1131c85 100644[m
+[1m--- a/src/components/chat/Chat.jsx[m
+[1m+++ b/src/components/chat/Chat.jsx[m
+[36m@@ -1,13 +1,24 @@[m
+ import { useEffect, useRef, useState } from "react";[m
+ import "./chat.css"[m
+[31m-import EmojiPicker from "emoji-picker-react" [m
+[31m-import { doc, onSnapshot } from "firebase/firestore";[m
+[32m+[m[32mimport EmojiPicker from "emoji-picker-react"[m
+[32m+[m[32mimport {[m
+[32m+[m[32m    arrayUnion,[m
+[32m+[m[32m    doc,[m
+[32m+[m[32m    getDoc,[m
+[32m+[m[32m    onSnapshot,[m
+[32m+[m[32m    updateDoc,[m
+[32m+[m[32m} from "firebase/firestore";[m
+ import { db } from "../../Library/firebase";[m
+ import { useSelector } from "react-redux";[m
+ [m
+ const Chat =() => {[m
+ [m
+     const chatId = useSelector((state) => state.chat.chatId)[m
+[32m+[m[32m    const user =useSelector((state) => state.chat.user)[m
+[32m+[m[32m    const isCurrentUserBlocked =useSelector((state) => state.chat.isCurrentUserBlocked)[m
+[32m+[m[32m    const isReceiverBlocked =useSelector((state) => state.chat.isReceiverBlocked)[m
+[32m+[m
+[32m+[m[32m    const currentUser = useSelector((state) => state.user.currentUser)[m
+ [m
+     const [chat,setChat] = useState();[m
+ [m
+[36m@@ -15,15 +26,20 @@[m [mconst Chat =() => {[m
+ [m
+     const [msgText,setMsgtext] = useState("")[m
+ [m
+[32m+[m[32m    const [img, setImg] = useState({[m
+[32m+[m[32m        file: null,[m
+[32m+[m[32m        url: "",[m
+[32m+[m[32m      });[m
+[32m+[m
+     const handelEmojiClick = (e) => {[m
+         setMsgtext((prev) => prev + e.emoji)[m
+     }[m
+ [m
+     const endRef = useRef(null)[m
+ [m
+[31m-    useEffect(()=>{[m
+[31m-        endRef.current?.scrollIntoView({behavior : "smooth"})[m
+[31m-    })[m
+[32m+[m[32m    useEffect(() => {[m
+[32m+[m[32m        endRef.current?.scrollIntoView({ behavior: "smooth" });[m
+[32m+[m[32m    }, [chat?.messages]);[m
+ [m
+     useEffect(() => {[m
+         const unSub = onSnapshot([m
+[36m@@ -38,15 +54,67 @@[m [mconst Chat =() => {[m
+         }[m
+     }, [chatId])[m
+ [m
+[31m-    console.log(chat);[m
+[32m+[m[32m    const handleSend = async () => {[m
+[32m+[m[32m        if (msgText === "") return;[m
+[32m+[m[41m    [m
+[32m+[m[32m        let imgUrl = null;[m
+[32m+[m[41m    [m
+[32m+[m[32m        try {[m
+[32m+[m[32m          if (img.file) {[m
+[32m+[m[32m            imgUrl = await upload(img.file);[m
+[32m+[m[32m          }[m
+[32m+[m[41m    [m
+[32m+[m[32m          await updateDoc(doc(db, "chats", chatId), {[m
+[32m+[m[32m            messages: arrayUnion({[m
+[32m+[m[32m              senderId: currentUser.id,[m
+[32m+[m[32m              text: msgText,[m
+[32m+[m[32m              createdAt: new Date(),[m
+[32m+[m[32m              ...(imgUrl && { img: imgUrl }),[m
+[32m+[m[32m            }),[m
+[32m+[m[32m          });[m
+[32m+[m[41m    [m
+[32m+[m[32m          const userIDs = [currentUser.id, user.id];[m
+[32m+[m[41m    [m
+[32m+[m[32m          userIDs.forEach(async (id) => {[m
+[32m+[m[32m            const userChatsRef = doc(db, "userchats", id);[m
+[32m+[m[32m            const userChatsSnapshot = await getDoc(userChatsRef);[m
+[32m+[m[41m    [m
+[32m+[m[32m            if (userChatsSnapshot.exists()) {[m
+[32m+[m[32m              const userChatsData = userChatsSnapshot.data();[m
+[32m+[m[41m    [m
+[32m+[m[32m              const chatIndex = userChatsData.chats.findIndex([m
+[32m+[m[32m                (c) => c.chatId === chatId[m
+[32m+[m[32m              );[m
+[32m+[m[41m    [m
+[32m+[m[32m              userChatsData.chats[chatIndex].lastMessage = msgText;[m
+[32m+[m[32m              userChatsData.chats[chatIndex].isSeen =[m
+[32m+[m[32m                id === currentUser.id ? true : false;[m
+[32m+[m[32m              userChatsData.chats[chatIndex].updatedAt = Date.now();[m
+[32m+[m[41m    [m
+[32m+[m[32m              await updateDoc(userChatsRef, {[m
+[32m+[m[32m                chats: userChatsData.chats,[m
+[32m+[m[32m              });[m
+[32m+[m[32m            }[m
+[32m+[m[32m          });[m
+[32m+[m[32m        } catch (err) {[m
+[32m+[m[32m          console.log(err);[m
+[32m+[m[32m        } finally{[m
+[32m+[m[32m        setImg({[m
+[32m+[m[32m          file: null,[m
+[32m+[m[32m          url: "",[m
+[32m+[m[32m        });[m
+[32m+[m[41m    [m
+[32m+[m[32m        setMsgtext("");[m
+[32m+[m[32m        }[m
+[32m+[m[32m      };[m
+ [m
+     return ([m
+         <div className="chat">[m
+             <div className="top">[m
+                 <div className="user">[m
+[31m-                    <img src="./avatar.png" alt="" />[m
+[31m-                    <div className="tex">[m
+[31m-                        <span>Abcd xyz</span>[m
+[32m+[m[32m                    <img src={currentUser.avatar || "./avatar.png"} alt="" />[m
+[32m+[m[32m                    <div className="text">[m
+[32m+[m[32m                        <span>{currentUser.username}</span>[m
+                         <p>Lorem ipsum </p>[m
+                     </div>[m
+                 </div>[m
+[36m@@ -57,14 +125,14 @@[m [mconst Chat =() => {[m
+                 </div>[m
+             </div>[m
+             <div className="center">[m
+[31m-                {chat?.message?.map((message) => {[m
+[31m-                    <div className="message" key={message?.createdAt}>[m
+[32m+[m[32m                {chat?.messages?.map((message) => ([m
+[32m+[m[32m                    <div className="message own" key={message?.createdAt}>[m
+                         <div className="texts">[m
+                             <p>{message?.text}</p>[m
+                             {/* <span>{}</span> */}[m
+                         </div>[m
+                     </div>[m
+[31m-                })}[m
+[32m+[m[32m                ))}[m
+                 <div ref={endRef}></div>[m
+             </div>[m
+             <div className="bottom">[m
+[36m@@ -88,7 +156,7 @@[m [mconst Chat =() => {[m
+                             <EmojiPicker open={openEmojiPicker} onEmojiClick={handelEmojiClick}/>[m
+                         </div>[m
+                     </div>[m
+[31m-                    <button className="sendButton">Send</button>[m
+[32m+[m[32m                    <button className="sendButton" onClick={handleSend}>Send</button>[m
+             </div>[m
+         </div>[m
+     );[m
