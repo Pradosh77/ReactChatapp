@@ -57,8 +57,10 @@ const Detail = () => {
                         <img src="./arrowDown.png" alt="" />
                     </div>
                 </div>
-                <button>Block USer</button>
-                <button className="logout" onClick={() => auth.signOut()}>Log Out</button>
+                <div style={{marginTop: "auto",display:"flex",flexDirection:"column"}}>
+                    <button>Block User</button>
+                    <button className="logout" onClick={() => auth.signOut()}>Log Out</button>
+                </div>
             </div>
         </div>
     )

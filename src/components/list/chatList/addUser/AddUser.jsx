@@ -4,7 +4,7 @@ import "./adduser.css"
 import { arrayUnion, collection, doc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore"; 
 import { useSelector } from "react-redux";
 
-const AddUser = () => {
+const AddUser = ({onAdduser}) => {
 
     const currentUser = useSelector((state) => state.user.currentUser);
 
@@ -68,6 +68,8 @@ const AddUser = () => {
                     updatedAt:Date.now(),
                 })
             });
+
+            onAdduser();
 
          } catch(err){
             console.log(err);

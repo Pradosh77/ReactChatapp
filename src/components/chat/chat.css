@@ -8,7 +8,7 @@
     flex-direction: column;
   
     .top {
-      padding: 20px;
+      padding: 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -111,7 +111,7 @@
     }
   
     .bottom {
-      padding: 20px;
+      padding: 15px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -136,7 +136,7 @@
         border: none;
         outline: none;
         color: white;
-        padding: 20px;
+        padding: 15px;
         border-radius: 10px;
         font-size: 16px;
   
