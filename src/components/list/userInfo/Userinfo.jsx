@@ -4,7 +4,7 @@ import "./userinfo.css"
 const Userinfo = () => {
 
     const currentUser = useSelector((state) => state.user.currentUser);
-
+    
     return (
         <div className="userInfo">
             <div className="user">

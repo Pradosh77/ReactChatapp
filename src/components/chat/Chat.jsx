@@ -122,9 +122,9 @@ const Chat = () => {
         <div className="chat">
             <div className="top">
                 <div className="user">
-                    <img src={currentUser.avatar || "./favicon.png"} alt="" />
+                    <img src={user.avatar || "./favicon.png"} alt="" />
                     <div className="text">
-                        <span>{currentUser.username}</span>
+                        <span>{user.username}</span>
                         <p>Lorem ipsum </p>
                     </div>
                 </div>
@@ -136,10 +136,16 @@ const Chat = () => {
             </div>
             <div className="center">
                 {chat?.messages?.map((message) => (
-                    <div className={message.senderId === currentUser?.id ? "message own" : "message"} key={message?.createdAt}>
+                    <div
+                        className={
+                            message.senderId === currentUser?.id ? "message own" : "message"
+                        }
+                        key={message?.createAt}
+                    >
                         <div className="texts">
-                            <p>{message?.text}</p>
-                            {/* <span>{}</span> */}
+                            {message.img && <img src={message.img} alt="" />}
+                            <p>{message.text}</p>
+                            {/* <span>{format(message.createdAt.toDate())}</span> */}
                         </div>
                     </div>
                 ))}
