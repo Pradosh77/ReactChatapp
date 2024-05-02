@@ -32,7 +32,7 @@ const Chat = () => {
         url: "",
     });
 
-    const handelEmojiClick = (e) => {
+    const handleEmojiClick = (e) => {
         setMsgtext((prev) => prev + e.emoji)
     }
 
@@ -179,7 +179,7 @@ const Chat = () => {
                         onClick={() => setOpenEmojiPicker((prev) => !prev)}
                     />
                     <div className="picker">
-                        <EmojiPicker open={openEmojiPicker} onEmojiClick={handelEmojiClick} />
+                        <EmojiPicker open={openEmojiPicker} onEmojiClick={handleEmojiClick} />
                     </div>
                 </div>
                 <button className="sendButton" onClick={handleSend}>Send</button>
