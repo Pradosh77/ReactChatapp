@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { db } from "../../../../Library/firebase";
 import "./adduser.css"
-import { arrayUnion, collection, doc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore"; 
+import { arrayUnion, collection, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore"; 
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const AddUser = ({onAdduser}) => {
 
@@ -34,23 +35,26 @@ const AddUser = ({onAdduser}) => {
          const chatRef = collection(db,"chats")
          const userChatsRef = collection(db,"userchats")
 
-         try{
+        try {
             const newChatref = doc(chatRef)
 
-            await setDoc(newChatref,{
+            // Check if user is already in the chat list
+            const addedUserChatsListRef = doc(db, "userchats", currentUser.id);
+            const docSnapshot = await getDoc(addedUserChatsListRef);
+            const currentChatList = docSnapshot.data();
+            if (currentChatList?.chats.some(chat => chat.receiverId === user.id)) {
+                return toast.warn("Oops! Looks like the user is already in the chat list.");
+            }
+
+            if (user.id === currentUser.id) {
+                return toast.error("Oops! Can't add yourself !");
+            }
+
+            await setDoc(newChatref, {
                 createdAt:serverTimestamp(),
-                message:[],
+                messages:[],
             })
             
-            await updateDoc(doc(userChatsRef,user.id),{
-                chats:arrayUnion({
-                    chatId: newChatref.id,
-                    lastMessage:"",
-                    receiverId: currentUser.id,
-                    updatedAt:Date.now(),
-                })
-            })
-
             await updateDoc(doc(userChatsRef,user.id),{
                 chats:arrayUnion({
                     chatId: newChatref.id,

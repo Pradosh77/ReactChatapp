@@ -11,7 +11,6 @@ export const chatSlice = createSlice({
     },
     reducers: {
         changeChat: (state, action) => {
-            console.log(action.payload);
             const { chatId, user , currentUser} = action.payload;
             if (user.blocked.includes(currentUser.id)) {
                 state.chatId = chatId;
@@ -31,7 +30,10 @@ export const chatSlice = createSlice({
             }
         },
         changeBlock: (state) => {
-            state.isReceiverBlocked = !state.isReceiverBlocked;
+            return {
+                ...state,
+                isReceiverBlocked: !state.isReceiverBlocked
+            };
         },
         resetChat: (state) => {
             state.chatId = null;

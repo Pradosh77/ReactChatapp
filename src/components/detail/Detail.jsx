@@ -1,13 +1,43 @@
-import { auth } from "../../Library/firebase"
+import { useDispatch, useSelector } from "react-redux"
+import { auth, db } from "../../Library/firebase"
 import "./detail.css"
+import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore"
+import { changeBlock, resetChat } from "../../Library/Store/chatSlice"
+
 
 const Detail = () => {
+
+    const { chatId ,user ,isCurrentUserBlocked, isReceiverBlocked} = useSelector((state) => state.chat)
+    const currentUser = useSelector((state) => state.user.currentUser);
+    const dispatch = useDispatch()
+    const handleBlock = async() => {
+        if(!user)
+            return;
+
+        const userDocRef = doc(db,"users",currentUser.id)
+        
+        try{
+            await updateDoc(userDocRef,{
+                blocked: isReceiverBlocked ? arrayRemove(user.id) : arrayUnion(user.id),
+            })
+
+            dispatch(changeBlock());
+
+        }catch(err){
+            console.log(err)
+        }
+    }
+
+    const handelLogout = () => {
+        auth.signOut()
+        resetChat()
+    }
+
     return (
         <div className="detail">
             <div className="user">
-                <img src="./avatar.png" alt="" />
-                <h2>ABCSD</h2>
-                <p>Lorem ipsum dolor.</p>
+                <img src={user?.avatar || "./avatar.png"} alt="" />
+                <h2>{user?.username}</h2>
             </div>
             <div className="info">
                 <div className="option">
@@ -57,9 +87,15 @@ const Detail = () => {
                         <img src="./arrowDown.png" alt="" />
                     </div>
                 </div>
-                <div style={{marginTop: "auto",display:"flex",flexDirection:"column"}}>
-                    <button>Block User</button>
-                    <button className="logout" onClick={() => auth.signOut()}>Log Out</button>
+                <div style={{ marginTop: "auto", display: "flex", flexDirection: "column" }}>
+                    <button onClick={handleBlock}>
+                        {isCurrentUserBlocked
+                            ? "You are Blocked!"
+                            : isReceiverBlocked
+                                ? "User blocked"
+                                : "Block User"}
+                    </button>
+                    <button className="logout" onClick={handelLogout}>Log Out</button>
                 </div>
             </div>
         </div>

@@ -10,7 +10,8 @@ import {
 } from "firebase/firestore";
 import { db } from "../../Library/firebase";
 import { useSelector } from "react-redux";
-import upload from '../../Library/upload.js'
+import upload from '../../Library/upload.js';
+import { format } from "timeago.js";
 
 const Chat = () => {
 
@@ -122,10 +123,10 @@ const Chat = () => {
         <div className="chat">
             <div className="top">
                 <div className="user">
-                    <img src={user.avatar || "./favicon.png"} alt="" />
+                    <img src={user?.avatar || "./avatar.png"} alt="" />
                     <div className="text">
-                        <span>{user.username}</span>
-                        <p>Lorem ipsum </p>
+                        <h2>{user?.username || "user"}</h2>
+                        {/* <p>Lorem ipsum </p> */}
                     </div>
                 </div>
                 <div className="icons">
@@ -145,7 +146,7 @@ const Chat = () => {
                         <div className="texts">
                             {message.img && <img src={message.img} alt="" />}
                             <p>{message.text}</p>
-                            {/* <span>{format(message.createdAt.toDate())}</span> */}
+                            <span>{format(message.createdAt.toDate())}</span>
                         </div>
                     </div>
                 ))}
@@ -174,9 +175,14 @@ const Chat = () => {
                     <img src="./mic.png" alt="" />
                 </div>
                 <input type="text"
-                    placeholder="Type a message..."
+                     placeholder={
+                        isCurrentUserBlocked || isReceiverBlocked
+                          ? "You cannot send a message"
+                          : "Type a message..."
+                      }
                     value={msgText}
                     onChange={(e) => setMsgtext(e.target.value)}
+                    disabled={isCurrentUserBlocked || isReceiverBlocked}
                 />
                 <div className="emoji">
                     <img
@@ -188,7 +194,7 @@ const Chat = () => {
                         <EmojiPicker open={openEmojiPicker} onEmojiClick={handleEmojiClick} />
                     </div>
                 </div>
-                <button className="sendButton" onClick={handleSend}>Send</button>
+                <button className="sendButton" onClick={handleSend} disabled={isCurrentUserBlocked || isReceiverBlocked}>Send</button>
             </div>
         </div>
     );

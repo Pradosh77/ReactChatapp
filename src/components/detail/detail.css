@@ -85,7 +85,7 @@
       }
       button {
         padding: 15px;
-        background-color: rgba(230, 74, 105, 0.553);
+        background-color: rgba(230, 74, 105, 85%);
         color: white;
         border: none;
         border-radius: 5px;
@@ -101,7 +101,7 @@
           background-color: #1a73e8;
 
           &:hover {
-            background-color: rgba(25, 0, 249, 0.796);
+            background-color: rgb(0 77 249 / 80%);
           }
         }
       }

@@ -1,6 +1,6 @@
 .chatList {
     flex: 1;
-    overflow-y:auto;
+    overflow-y: auto;
     overflow-x: hidden;
 
 
@@ -40,6 +40,10 @@
             padding: 10px;
             border-radius: 10px;
             cursor: pointer;
+
+            &:hover {
+                background-color: rgba(20, 100, 220, 0.281);
+            }
         }
     }
 

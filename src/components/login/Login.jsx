@@ -50,8 +50,10 @@ const Login = () => {
 
         const { username, email, password } = Object.fromEntries(formDate);
         // VALIDATE INPUTS
-        if (!username || !email || !password)
+        if (!username || !email || !password){
+            setLoading(false)
             return toast.warn("Please enter inputs!");
+        }
         if (!avatar.file){
             setLoading(false)
             return toast.warn("Please upload an avatar!");
@@ -63,7 +65,7 @@ const Login = () => {
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
             setLoading(false)
-            return toast.warn("Select another username");
+            return toast.warn("User name not available! Select another username");
         }
 
 
@@ -80,16 +82,10 @@ const Login = () => {
                 blocked: []
             };
             
-            if (imgUrl != "") {
-                userData.avatar = imgUrl;
-            }
             await setDoc(doc(db, "users", res.user.uid), userData);
-            if (imgUrl) {
-                userData.avatar = imgUrl;
-            }
 
             await setDoc(doc(db, "userchats", res.user.uid), {
-                chat: [],
+                chats: [],
             });
 
               toast.success("Account Created! You can login now")
@@ -100,6 +96,8 @@ const Login = () => {
         }finally{
             setLoading(false)
         }
+
+        console.log(currentUser);   
     }
 
     return(
@@ -130,7 +128,7 @@ const Login = () => {
                     <input type="text" placeholder="Username" name="username"/>
                     <input type="text" placeholder="Email" name="email" />
                     <input type="password" placeholder="Passowrd" name="password" />
-                    <button disabled={loading}>{loading? "Loading...": "Sign Up"}</button>
+                    <button disabled={loading}>{loading? "Creating your account...": "Sign Up"}</button>
                 </form>
             </div>
         </div>
